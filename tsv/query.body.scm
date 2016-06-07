@@ -13,6 +13,16 @@
                 (car l)))
   (if result result (error "tsv-index" "Field not found")))
 
+(define (maximum-id l)
+  (let loop ((result -1)
+             (in (cdr l)))
+    (if (null? in)
+        result
+        (loop (if (< result (string->number (caar in)))
+                  (string->number (caar in))
+                  result)
+              (cdr in)))))
+
 (define (columns l . collist)
   ;; Implements part of SQL "SELECT"
   (define column-order
@@ -55,4 +65,17 @@
                       out)
                   (cdr in))))
       (error "union" "Fields not identical")))
+
+(define insert
+  (case-lambda
+   ((t record)
+    (cons (car t) (cons record (cdr t))))
+   ((t record id?)
+    (if id?
+        (cons (car t) (cons
+                       (cons
+                        (number->string (+ 1 (maximum-id (cdr t))))
+                        record)
+                       (cdr t)))
+        (insert t record)))))
 
