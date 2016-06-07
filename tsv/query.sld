@@ -4,6 +4,6 @@
           (scheme write)
           (scheme read)
           (srfi 1))
-  (export tsv-index columns only)
+  (export tsv-index columns only union)
   (include "query.body.scm"))
 

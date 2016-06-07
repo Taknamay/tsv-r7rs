@@ -42,3 +42,16 @@
              (pred (list-ref rec i)))
            (cdr t))))
 
+(define (union t1 t2)
+  (if (equal? (car t1) (car t2))
+      (let loop ((out (cdr t1))
+                 (in (cdr t2)))
+        (if (null? in)
+            (cons (car t1) out)
+            (loop (if (null? (filter (lambda (l)
+                                       (equal? (car t2) l))))
+                      (cons (car in) out)
+                      out)
+                  (cdr in))))
+      (error "union" "Fields not identical")))
+
