@@ -6,13 +6,19 @@
 ;;; License: GPLv3+
 ;;;
 
+(define (tsv-index l field)
+  (define result
+    (list-index (lambda (s)
+                  (string=? field s))
+                (car l)))
+  (if result result (error "tsv-index" "Field not found")))
+
 (define (columns l . collist)
-  ;; Similar to SQL "SELECT"
+  ;; Implements part of SQL "SELECT"
   (define column-order
     (list->vector
      (map (lambda (field)
-            (list-index (lambda (s)
-                          (string=? field s)) (car l)))
+            (tsv-index l field))
           collist)))
   (define sz (length collist))
   (define (rewrite-record rec)
@@ -27,4 +33,12 @@
         (loop (+ i 1))))
     (vector->list newvec))
   (map rewrite-record l))
+
+(define (only t field pred)
+  (define i (tsv-index t field))
+  (cons
+   (car t)
+   (filter (lambda (rec)
+             (pred (list-ref rec i)))
+           (cdr t))))
 
