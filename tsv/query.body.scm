@@ -79,3 +79,19 @@
                        (cdr t)))
         (insert t record)))))
 
+(define (tsv-sort t field operator)
+  (define i (tsv-index t field))
+  (define (s->n-op original)
+    (lambda (a b)
+      (original (string->number a)
+                (string->number b))))
+  (case operator
+    ((<) (set! operator (s->n-op <)))
+    ((<=) (set! operator (s->n-op <=)))
+    ((>) (set! operator (s->n-op >)))
+    ((>=) (set! operator (s->n-op >=))))
+  (cons (car t)
+        (sort (cdr t) (lambda (rec1 rec2)
+                        (operator (list-ref rec1 i)
+                                  (list-ref rec2 i))))))
+
